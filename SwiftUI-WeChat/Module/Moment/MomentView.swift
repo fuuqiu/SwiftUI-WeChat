@@ -9,55 +9,99 @@
 import SwiftUI
 
 struct MomentView: View {
-    @State private var navigationOpacity: Double = 0
+    let moments: [Moment] = mock(name: "moments")
     
     var body: some View {
-        GeometryReader { geometry in
-            ZStack(alignment: .top) {
+        GeometryReader { proxy in
+            ZStack {
+                VStack {
+                    Color.black.frame(height: 300) // 下拉时露出的黑色背景
+                    Spacer() // 避免到底部上拉出现黑色背景
+                }
+                
                 List {
                     Group {
                         Header()
-                            // TODO: 优化为滚动渐变
-                            .onAppear { self.navigationOpacity = 0 }
-                            .onDisappear { self.navigationOpacity = 1 }
+                            // 将 Header 的底部坐标变化传递给上层，用于导航栏变化
+                            .anchorPreference(key: NavigationKey.self, value: .bottom) { [$0] }
                         
-                        ForEach(0 ..< 20) { _ in
-                            Cell()
+                        ForEach(self.moments) { moment in
+                            VStack(spacing: 0) {
+                                MomentCell(moment: moment)
+                                Separator()
+                            }
                         }
                     }
                     .listRowInsets(.zero)
                 }
-                Navigation(opacity: self.$navigationOpacity)
-                    .frame(height: geometry.safeAreaInsets.top + 44)
+                .overlayPreferenceValue(NavigationKey.self) { value in
+                    VStack {
+                        self.navigation(proxy: proxy, value: value)
+                        Spacer()
+                    }
+                }
             }
         }
         .edgesIgnoringSafeArea(.top)
         .navigationBarHidden(true)
         .navigationBarTitle("朋友圈", displayMode: .inline)
-        .navigationBarItems(trailing: Image(systemName: "camera"))
-        .statusBar(style: navigationOpacity > 0.5 ? .default : .lightContent)
+        .onDisappear { self.statusBarStyle.current = .default }
     }
     
-    @EnvironmentObject var appState: AppState
+    func navigation(proxy: GeometryProxy, value: [Anchor<CGPoint>]) -> some View {
+        let height = proxy.safeAreaInsets.top + 44
+        let progress: CGFloat
+        
+        if let anchor = value.first {
+            // proxy[anchor] 作用是得到 anchor 在 proxy 中的相对位置
+            // -proxy[anchor].y 为 0 时代表 Header 底部正好在界面顶部的位置
+            // 为了与导航栏高度配合，+ height + 20，过渡位置更缓和
+            // 最后 / 44 即在 44px 距离内完成隐藏到显示
+            progress = max(0, min(1, (-proxy[anchor].y + height + 20) / 44))
+        } else {
+            // 这种情况是 Header 完全不在界面中，一般也就是滑出屏幕外了
+            progress = 1
+        }
+
+        // 同时更新状态栏样式
+        statusBarStyle.current = progress > 0.3 ? .default : .lightContent
+        
+        return Navigation(progress: Double(progress))
+            .frame(height: height)
+    }
+    
+    @Environment(\.statusBarStyle) var statusBarStyle
 }
 
 struct MomentView_Previews: PreviewProvider {
     static var previews: some View {
         MomentView()
-            .environmentObject(AppState())
+    }
+}
+
+private struct NavigationKey: PreferenceKey {
+    static var defaultValue: [Anchor<CGPoint>] = []
+    
+    static func reduce(value: inout Value, nextValue: () -> Value) {
+        value.append(contentsOf: nextValue())
     }
 }
 
 private struct Navigation: View {
-    @Binding var opacity: Double
+    let progress: Double
     
     var body: some View {
         ZStack(alignment: .bottom) {
             Rectangle()
-                .foregroundColor(Color("light_gray").opacity(opacity))
+                .foregroundColor(
+                    Color("light_gray")
+                        .opacity(progress)
+                )
             
             HStack {
-                Button(action: { print("back") }) {
+                Button(action: {
+                    self.presentationMode.wrappedValue.dismiss()
+                }) {
                     Image("back")
                 }
                 .padding()
@@ -65,15 +109,23 @@ private struct Navigation: View {
                 Spacer()
                 
                 Button(action: { print("camera") }) {
-                    Image(systemName: "camera.fill")
+                    Image(systemName: progress > 0.4 ? "camera" : "camera.fill")
                 }
                 .padding()
             }
-            .accentColor(Color(white: 1 - opacity))
+            .accentColor(Color(white: colorScheme == .light ? 1 - progress : 1))
             .frame(height: 44)
+            
+            Text("朋友圈")
+                .font(.system(size: 16, weight: .semibold))
+                .opacity(progress)
+                .frame(height: 44, alignment: .center)
         }
         .frame(maxWidth: .infinity)
     }
+    
+    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.presentationMode) var presentationMode
 }
 
 private struct Header: View {
@@ -82,7 +134,7 @@ private struct Header: View {
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(spacing: 0) {
-                Image(member.background ?? "mock_background")
+                Image(member.background ?? "")
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(height: 300)
@@ -107,11 +159,5 @@ private struct Header: View {
                     .padding(.trailing, 12)
             }
         }
-    }
-}
-
-private struct Cell: View {
-    var body: some View {
-        Text("asd")
     }
 }

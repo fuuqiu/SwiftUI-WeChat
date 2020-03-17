@@ -9,29 +9,35 @@
 import SwiftUI
 
 struct RootView: View {
-    @ObservedObject var root = RootViewModel()
+    @ObservedObject var model = RootViewModel()
+    
+    // 作为属性可以避免每次切换都重新初始化四个界面的结构以及数据
+    let homeView = HomeView()
+    let contactView = ContactView()
+    let discoverView = DiscoverView()
+    let meView = MeView()
     
     var body: some View {
         NavigationView {
-            TabView(selection: $root.tabSelection) {
-                HomeView()
-                    .tabItem { Item(index: $root.tabSelection, style: .chat) }
+            TabView(selection: $model.tabSelection) {
+                homeView
+                    .tabItem { Item(index: $model.tabSelection, style: .chat) }
                     .tag(0)
-                ContactView()
-                    .tabItem { Item(index: $root.tabSelection, style: .contact) }
+                contactView
+                    .tabItem { Item(index: $model.tabSelection, style: .contact) }
                     .tag(1)
-                DiscoverView()
-                    .tabItem { Item(index: $root.tabSelection, style: .discover) }
+                discoverView
+                    .tabItem { Item(index: $model.tabSelection, style: .discover) }
                     .tag(2)
-                MeView()
-                    .tabItem { Item(index: $root.tabSelection, style: .me) }
+                meView
+                    .tabItem { Item(index: $model.tabSelection, style: .me) }
                     .tag(3)
             }
             .accentColor(.green) // 选中某个 Tab 时，Item 的高亮颜色
-            .environmentObject(root)
-            .navigationBarHidden(root.tabNavigationHidden)
-            .navigationBarItems(trailing: root.tabNavigationBarTrailingItems)
-            .navigationBarTitle(root.tabNavigationTitle, displayMode: .inline)
+            .navigationBarHidden(model.tabNavigationHidden)
+            .navigationBarItems(trailing: model.tabNavigationBarTrailingItems)
+            .navigationBarTitle(model.tabNavigationTitle, displayMode: .inline)
+            .environmentObject(model)
         }
     }
 }

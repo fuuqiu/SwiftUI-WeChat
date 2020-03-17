@@ -12,24 +12,31 @@ struct ContactView : View {
     let contacts: [Contact] = mock(name: "contacts")
     
     var body: some View {
-        List {
-            Group {
-                SearchEntryView()
-                Cell(icon: "contact_new_friend", title: "新的朋友", style: .system, isLast: true)
-                ForEach(contacts) { contact in
-                    Section(header: SectionHeader(title: contact.id)) {
-                        ForEach(contact.members) { member in
-                            Cell(
-                                icon: member.icon,
-                                title: member.name,
-                                style: .member,
-                                isLast: member.id == contact.members.last?.id
-                            )
+        ZStack {
+            VStack {
+                Color("light_gray").frame(height: 300) // 下拉时露出的灰色背景
+                Spacer() // 避免到底部上拉出现背景
+            }
+                
+            List {
+                Group {
+                    SearchEntryView()
+                    Cell(icon: "contact_new_friend", title: "新的朋友", style: .system, isLast: true)
+                    ForEach(contacts) { contact in
+                        Section(header: SectionHeader(title: contact.id)) {
+                            ForEach(contact.members) { member in
+                                Cell(
+                                    icon: member.icon,
+                                    title: member.name,
+                                    style: .member,
+                                    isLast: member.id == contact.members.last?.id
+                                )
+                            }
                         }
                     }
                 }
+                .listRowInsets(.zero)
             }
-            .listRowInsets(.zero)
         }
         .onAppear {
             self.root.tabNavigationHidden = false
@@ -44,9 +51,8 @@ struct ContactView : View {
 #if DEBUG
 struct ContactView_Previews : PreviewProvider {
     static var previews: some View {
-        NavigationView {
-            ContactView()
-        }
+        ContactView()
+            .environmentObject(RootViewModel())
     }
 }
 #endif
@@ -76,22 +82,21 @@ private struct Cell: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: 14) {
+            HStack(spacing: 12) {
                 Image(icon)
                     .renderingMode(.original)
                     .resizable()
-                    .frame(width: 44, height: 44)
+                    .frame(width: 40, height: 40)
                     .cornerRadius(style == .system ? 4 : 6)
 
                 Text(title)
-                    .font(.system(size: 18))
+                    .font(.system(size: 16))
                     .foregroundColor(.primary)
             }
-            .padding(EdgeInsets(top: 10, leading: 18, bottom: 10, trailing: 18))
+            .padding(EdgeInsets(top: 10, leading: 16, bottom: 10, trailing: 16))
             
             if !isLast { // 最后一行不增加分割线
-                Divider()
-                    .padding(EdgeInsets(top: 0, leading: 76, bottom: 0, trailing: 0))
+                Separator().padding(.leading, 76)
             }
         }
         .navigationLink(destination: ProfileView())

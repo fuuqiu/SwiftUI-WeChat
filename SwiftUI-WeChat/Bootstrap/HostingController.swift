@@ -10,11 +10,20 @@ import SwiftUI
 import Combine
 
 class HostingController<Content: View>: UIHostingController<HostingMiddle<Content>> {
-    private var appState = AppState()
-    private var cancellableSet: Set<AnyCancellable> = []
+    
+    private var statusBarStyle: UIStatusBarStyle = .default {
+        didSet {
+            if oldValue != statusBarStyle {
+                setNeedsStatusBarAppearanceUpdate()
+            }
+        }
+    }
     
     init(rootView: Content) {
-        super.init(rootView: HostingMiddle(appState: appState, content: rootView))
+        super.init(rootView: HostingMiddle(content: rootView))
+        
+        StatusBarStyle.Key.defaultValue.getter = { self.statusBarStyle }
+        StatusBarStyle.Key.defaultValue.setter = { self.statusBarStyle = $0 }
     }
     
     @objc required dynamic init?(coder aDecoder: NSCoder) {
@@ -22,25 +31,16 @@ class HostingController<Content: View>: UIHostingController<HostingMiddle<Conten
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        appState.preferredStatusBarStyle
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        appState.objectWillChange
-            .sink { [unowned self] in self.setNeedsStatusBarAppearanceUpdate() }
-            .store(in: &cancellableSet)
+        statusBarStyle
     }
 
 }
 
 struct HostingMiddle<Content: View>: View {
-    let appState: AppState
     let content: Content
     
     var body: some View {
         content
-            .environmentObject(appState)
+            // 预留设置全局 modifier 的位置
     }
 }

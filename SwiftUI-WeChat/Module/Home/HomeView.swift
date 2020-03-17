@@ -12,14 +12,21 @@ struct HomeView : View {
     let chats: [Chat] = mock(name: "chats")
     
     var body: some View {
-        List {
-            Group {
-                SearchEntryView()
-                ForEach(chats) { chat in
-                    Cell(chat: chat)
-                }
+        ZStack {
+            VStack {
+                Color("light_gray").frame(height: 300) // 下拉时露出的灰色背景
+                Spacer() // 避免到底部上拉出现背景
             }
-            .listRowInsets(.zero)
+            
+            List {
+                Group {
+                    SearchEntryView()
+                    ForEach(chats) { chat in
+                        Cell(chat: chat)
+                    }
+                }
+                .listRowInsets(.zero)
+            }
         }
         .onAppear {
             self.root.tabNavigationHidden = false
@@ -34,9 +41,8 @@ struct HomeView : View {
 #if DEBUG
 struct HomeView_Previews : PreviewProvider {
     static var previews: some View {
-        NavigationView {
-            HomeView()
-        }
+        HomeView()
+            .environmentObject(RootViewModel())
     }
 }
 #endif
@@ -53,15 +59,15 @@ private struct Cell: View {
                     .frame(width: 48, height: 48)
                     .cornerRadius(8)
 
-                VStack(alignment: .leading, spacing: 6) {
+                VStack(alignment: .leading, spacing: 5) {
                     HStack(alignment: .top) {
                         Text(chat.name)
-                            .font(.system(size: 18, weight: .bold))
+                            .font(.system(size: 16, weight: .regular))
                             .foregroundColor(.primary)
                         Spacer()
                         Text(chat.time)
-                            .font(.system(size: 12))
-                            .foregroundColor(.gray)
+                            .font(.system(size: 10))
+                            .foregroundColor(.secondary)
                     }
 
                     Text(chat.desc)
@@ -72,8 +78,7 @@ private struct Cell: View {
             }
             .padding(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16))
             
-            Divider()
-                .padding(EdgeInsets(top: 0, leading: 76, bottom: 0, trailing: 0))
+            Separator().padding(.leading, 76)
         }
         .navigationLink(destination: ChatView())
     }

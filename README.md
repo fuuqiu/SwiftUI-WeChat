@@ -4,7 +4,7 @@
 <a href="https://developer.apple.com/swift"><img src="https://img.shields.io/badge/language-Swift%205.1-f48041.svg?style=flat"></a>
 <a href="https://developer.apple.com/swiftui"><img src="https://img.shields.io/badge/framework-SwiftUI-blue.svg?style=flat"></a>
 <a href="https://developer.apple.com/ios"><img src="https://img.shields.io/badge/platform-iOS%2013%2b-blue.svg?style=flat"></a>
-<a href="https://github.com/apple/swift-package-manager"><img src="https://img.shields.io/badge/SPM-compatible-4BC51D.svg?style=flat"></a>
+<a href="https://codebeat.co/projects/github-com-wxxsw-swiftui-wechat-master"><img alt="codebeat badge" src="https://codebeat.co/badges/5b74e3e1-8235-4730-b3e9-82373c921301" /></a>
 <a href="https://github.com/wxxsw/SwiftUI-WeChat/blob/master/LICENSE"><img src="http://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat"></a>
 </p>
 <br/>
@@ -29,32 +29,33 @@
 ## Features
 
 - 全部基于 SwiftUI 实现
-- 实现二级页面隐藏 TabView
-- 实现 List 的自定义样式（包括消除 NavigationLink 的样式）
-- 完全支持 Dark Mode
+- 首页切换时导航栏变化，二级页面隐藏 TabView
+- 动态列表使用 List，自定义样式（包括消除 NavigationLink 的样式）
+- 朋友圈图片宫格、在线视频播放、滚动列表时状态栏、导航栏跟随变化
 - 特殊处理、知识点包含注释
-- 使用 Swift Package Manager
+- 完全支持 Dark Mode
 
 ## Screenshots
 
 Light Mode|Dark Mode
 ---|---
-![HomeView](https://github.com/wxxsw/SwiftUI-WeChat/blob/master/Images/screenshot_home_light.png?1212)|![HomeView](https://github.com/wxxsw/SwiftUI-WeChat/blob/master/Images/screenshot_home_dark.png?1212)
-![ContactView](https://github.com/wxxsw/SwiftUI-WeChat/blob/master/Images/screenshot_contact_light.png?1212)|![ContactView](https://github.com/wxxsw/SwiftUI-WeChat/blob/master/Images/screenshot_contact_dark.png?1212)
-![DiscoverView](https://github.com/wxxsw/SwiftUI-WeChat/blob/master/Images/screenshot_discover_light.png?1212)|![DiscoverView](https://github.com/wxxsw/SwiftUI-WeChat/blob/master/Images/screenshot_discover_dark.png?1212)
-![MeView](https://github.com/wxxsw/SwiftUI-WeChat/blob/master/Images/screenshot_me_light.png?1212)|![MeView](https://github.com/wxxsw/SwiftUI-WeChat/blob/master/Images/screenshot_me_dark.png?1212)
+![HomeView](https://github.com/wxxsw/SwiftUI-WeChat/blob/master/Images/screenshot_home_light.png?0301)|![HomeView](https://github.com/wxxsw/SwiftUI-WeChat/blob/master/Images/screenshot_home_dark.png?0301)
+![ContactView](https://github.com/wxxsw/SwiftUI-WeChat/blob/master/Images/screenshot_contact_light.png?0301)|![ContactView](https://github.com/wxxsw/SwiftUI-WeChat/blob/master/Images/screenshot_contact_dark.png?0301)
+![DiscoverView](https://github.com/wxxsw/SwiftUI-WeChat/blob/master/Images/screenshot_discover_light.png?0301)|![DiscoverView](https://github.com/wxxsw/SwiftUI-WeChat/blob/master/Images/screenshot_discover_dark.png?0301)
+![MomentView](https://github.com/wxxsw/SwiftUI-WeChat/blob/master/Images/screenshot_moment_light.png?0204)|![MomentView](https://github.com/wxxsw/SwiftUI-WeChat/blob/master/Images/screenshot_moment_dark.png?0204)
+![MeView](https://github.com/wxxsw/SwiftUI-WeChat/blob/master/Images/screenshot_me_light.png?0301)|![MeView](https://github.com/wxxsw/SwiftUI-WeChat/blob/master/Images/screenshot_me_dark.png?0301)
 
 ## Progress
 
 界面|位置|状态
 ---|---|---
-标签栏|Module/Root/RootTabView|✅
+标签栏|Module/Root/RootView|✅
 首页|Module/Home/HomeView|✅
+聊天|Module/Chat/ChatView|🔨
 联系人|Module/Contact/ContactView|✅
 发现|Module/Discover/DiscoverView|✅
+朋友圈|Module/Moment/MomentView|✅
 我的|Module/Me/MeView|✅
-朋友圈|Module/Moment/MomentView|🔨
-聊天|Module/Chat/ChatView|待开发
 搜索|Module/Search/SearchView|待开发
 其它|...|待开发
 
